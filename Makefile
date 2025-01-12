@@ -22,6 +22,12 @@ format:
 	ruff check --select I --fix
 	ruff format
 
+test:
+	pytest
+
+coverage:
+	pytest --no-cov-on-fail --cov-report term-missing --cov=.
+
 clean:
-	rm -rf .ruff_cache
+	rm -rf .ruff_cache .coverage
 	find . -name __pycache__ | xargs rm -rf

@@ -4,3 +4,6 @@ line-length = 79
 
 [tool.ruff.lint]
 select = ["B", "E", "F", "I", "W", "C4", "UP", "ARG", "SIM"]
+
+[tool.coverage.run]
+omit = ["test_*"]
