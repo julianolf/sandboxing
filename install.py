@@ -16,3 +16,15 @@ if sys.platform not in SUPPORTED_PLATFORMS:
     error = f"Unsupported platform {sys.platform}, must be one of: {platforms}"
     print(error, file=sys.stderr)
     exit(1)
+
+import os
+
+
+def data_dir():
+    home = os.path.expanduser("~")
+
+    if sys.platform == "darwin":
+        return os.path.join(home, "Library", "Application Support")
+    else:
+        default = os.path.join(home, ".local", "share")
+        return os.getenv("XDG_DATA_HOME", default)
