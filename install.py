@@ -15,6 +15,12 @@ if sys.platform not in SUPPORTED_PLATFORMS:
     error = f"Unsupported platform {sys.platform}, must be one of: {platforms}"
     sys.exit(error)
 
+import importlib.util
+
+if not importlib.util.find_spec("ensurepip"):
+    error = "Missing required package 'ensurepip'"
+    sys.exit(error)
+
 import os
 
 HOME = os.path.expanduser("~")
