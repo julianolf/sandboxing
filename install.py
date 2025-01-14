@@ -44,16 +44,8 @@ def main():
         prog="install.py",
         description="Install Python programs in a safe and isolated environment.",
     )
-    parser.add_argument(
-        "package", help="the name of the package containing the program"
-    )
-    parser.add_argument(
-        "-v", "--version", help="the version of the package to install"
-    )
-    parser.add_argument(
-        "-u", "--url", help="the url from which to install the package"
-    )
-    parser.add_argument(
-        "-p", "--path", help="the path from which to install the package"
-    )
+    parser.add_argument("package", help="the name of the package containing the program")
+    parser.add_argument("-v", "--version", help="the version of the package to install")
+    parser.add_argument("-u", "--url", help="the url from which to install the package")
+    parser.add_argument("-p", "--path", help="the path from which to install the package")
     parser.parse_args()
