@@ -19,12 +19,16 @@ if sys.platform not in SUPPORTED_PLATFORMS:
 
 import os
 
+HOME = os.path.expanduser("~")
+
 
 def data_dir():
-    home = os.path.expanduser("~")
-
     if sys.platform == "darwin":
-        return os.path.join(home, "Library", "Application Support")
+        return os.path.join(HOME, "Library", "Application Support")
     else:
-        default = os.path.join(home, ".local", "share")
+        default = os.path.join(HOME, ".local", "share")
         return os.getenv("XDG_DATA_HOME", default)
+
+
+def bin_dir():
+    return os.path.join(HOME, ".local", "bin")

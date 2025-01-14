@@ -28,3 +28,8 @@ def test_data_dir_on_linux_without_xdg_data_home(home, monkeypatch):
     monkeypatch.delenv("XDG_DATA_HOME", raising=False)
     monkeypatch.setattr(install.sys, "platform", "linux")
     assert install.data_dir() == expected
+
+
+def test_bin_dir(home):
+    expected = os.path.join(home, ".local", "bin")
+    assert install.bin_dir() == expected
