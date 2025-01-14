@@ -21,6 +21,7 @@ if not importlib.util.find_spec("ensurepip"):
     error = "Missing required package 'ensurepip'"
     sys.exit(error)
 
+import argparse
 import os
 
 HOME = os.path.expanduser("~")
@@ -36,3 +37,11 @@ def data_dir():
 
 def bin_dir():
     return os.path.join(HOME, ".local", "bin")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Install Python program in an isolated environment"
+    )
+    parser.add_argument("program", help="package name, path or url")
+    parser.parse_args()
