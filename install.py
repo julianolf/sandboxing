@@ -23,6 +23,7 @@ if not importlib.util.find_spec("ensurepip"):
 
 import argparse
 import os
+import venv
 
 HOME = os.path.expanduser("~")
 
@@ -39,6 +40,11 @@ def bin_dir():
     return os.path.join(HOME, ".local", "bin")
 
 
+def install(args):
+    venv_dir = os.path.join(data_dir(), args.package, "venv")
+    venv.create(venv_dir, clear=True, with_pip=True)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="install.py",
@@ -48,4 +54,10 @@ def main():
     parser.add_argument("-v", "--version", help="the version of the package to install")
     parser.add_argument("-u", "--url", help="the url from which to install the package")
     parser.add_argument("-p", "--path", help="the path from which to install the package")
-    parser.parse_args()
+    args = parser.parse_args()
+
+    install(args)
+
+
+if __name__ == "__main__":
+    main()
