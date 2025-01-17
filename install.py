@@ -61,7 +61,9 @@ def install(args):
     venv_dir = os.path.join(data_dir(), args.package, "venv")
     venv.create(venv_dir, clear=True, with_pip=True)
     python = os.path.join(venv_dir, "bin", "python")
+    source = pkg_src(args)
     run(python, "-m", "pip", "install", "--disable-pip-version-check", "--upgrade", "pip")
+    run(python, "-m", "pip", "install", source)
 
 
 def main():
