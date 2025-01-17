@@ -23,6 +23,7 @@ if not importlib.util.find_spec("ensurepip"):
 
 import argparse
 import os
+import subprocess
 import venv
 
 HOME = os.path.expanduser("~")
@@ -38,6 +39,13 @@ def data_dir():
 
 def bin_dir():
     return os.path.join(HOME, ".local", "bin")
+
+
+def run(*cmd):
+    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if res.returncode != 0:
+        error = res.stdout.decode()
+        sys.exit(error)
 
 
 def install(args):
