@@ -48,6 +48,15 @@ def run(*cmd):
         sys.exit(error)
 
 
+def pkg_src(args):
+    src = args.path or args.url or args.package
+
+    if args.version and not args.path and not args.url:
+        src += f"=={args.version}"
+
+    return src
+
+
 def install(args):
     venv_dir = os.path.join(data_dir(), args.package, "venv")
     venv.create(venv_dir, clear=True, with_pip=True)
