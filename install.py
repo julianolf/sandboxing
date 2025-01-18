@@ -112,6 +112,7 @@ def main():
     parser.add_argument("-v", "--version", help="the version of the package to install")
     parser.add_argument("-u", "--url", help="the url from which to install the package")
     parser.add_argument("-p", "--path", help="the path from which to install the package")
+    parser.add_argument("--uninstall", action="store_true", default=False, help="uninstall package")
     args = parser.parse_args()
 
     install(args)
