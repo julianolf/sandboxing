@@ -77,12 +77,15 @@ def link(venv_bin, user_bin):
     for script in pkg_scripts(venv_bin):
         src = os.path.join(venv_bin, script)
         dst = os.path.join(user_bin, script)
+
+        if os.path.islink(dst) and os.path.realpath(dst) == src:
+            continue
+
         try:
             os.symlink(src, dst)
-        except FileExistsError as error:
-            if error.filename == src:
-                continue
-            sys.exit(str(error))
+        except FileExistsError:
+            error = f"{dst} already exists, cannot create symlink"
+            sys.exit(error)
 
 
 def install(args):
