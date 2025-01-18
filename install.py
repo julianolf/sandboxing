@@ -8,7 +8,7 @@ if sys.version_info[:2] < MIN_VERSION:
     error = f"Unsupported Python version {current}, requires {required}"
     sys.exit(error)
 
-SUPPORTED_PLATFORMS = ("cygwin", "darwin", "linux")
+SUPPORTED_PLATFORMS = ("darwin", "linux")
 
 if sys.platform not in SUPPORTED_PLATFORMS:
     platforms = ", ".join(SUPPORTED_PLATFORMS)
