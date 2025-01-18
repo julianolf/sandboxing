@@ -24,6 +24,7 @@ if not importlib.util.find_spec("ensurepip"):
 import argparse
 import fnmatch
 import os
+import shutil
 import subprocess
 import venv
 
@@ -88,6 +89,15 @@ def link(venv_bin, user_bin):
             sys.exit(error)
 
 
+def unlink(venv_bin, user_bin):
+    for script in pkg_scripts(venv_bin):
+        src = os.path.join(venv_bin, script)
+        dst = os.path.join(user_bin, script)
+
+        if os.path.islink(dst) and os.path.realpath(dst) == src:
+            os.unlink(dst)
+
+
 def install(args):
     venv_dir = os.path.join(data_dir(), args.package, "venv")
     venv_bin = os.path.join(venv_dir, "bin")
@@ -103,6 +113,16 @@ def install(args):
     link(venv_bin, user_bin)
 
 
+def uninstall(args):
+    base_dir = os.path.join(data_dir(), args.package)
+    venv_bin = os.path.join(base_dir, "venv", "bin")
+    user_bin = bin_dir()
+
+    if os.path.isdir(venv_bin) and os.path.isdir(user_bin):
+        unlink(venv_bin, user_bin)
+        shutil.rmtree(base_dir)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="install.py",
@@ -115,7 +135,10 @@ def main():
     parser.add_argument("--uninstall", action="store_true", default=False, help="uninstall package")
     args = parser.parse_args()
 
-    install(args)
+    if args.uninstall:
+        uninstall(args)
+    else:
+        install(args)
 
 
 if __name__ == "__main__":
