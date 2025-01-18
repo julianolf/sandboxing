@@ -99,7 +99,8 @@ def unlink(venv_bin, user_bin):
 
 
 def install(args):
-    venv_dir = os.path.join(data_dir(), args.package, "venv")
+    base_dir = os.path.join(data_dir(), args.package)
+    venv_dir = os.path.join(base_dir, "venv")
     venv_bin = os.path.join(venv_dir, "bin")
     venv.create(venv_dir, clear=True, with_pip=True)
 
@@ -112,6 +113,12 @@ def install(args):
     os.makedirs(user_bin, mode=0o755, exist_ok=True)
     link(venv_bin, user_bin)
 
+    print(
+        f"{args.package} installed at: {base_dir}\n"
+        f"Symbolic links were created at: {user_bin}\n"
+        f'Add `export PATH="{user_bin}:$PATH"` to your shell configuration file.'
+    )
+
 
 def uninstall(args):
     base_dir = os.path.join(data_dir(), args.package)
@@ -121,6 +128,8 @@ def uninstall(args):
     if os.path.isdir(venv_bin) and os.path.isdir(user_bin):
         unlink(venv_bin, user_bin)
         shutil.rmtree(base_dir)
+
+        print(f"Removed symbolic links from: {user_bin}\nDeleted directory: {base_dir}")
 
 
 def main():
