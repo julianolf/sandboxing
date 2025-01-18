@@ -22,6 +22,7 @@ if not importlib.util.find_spec("ensurepip"):
     sys.exit(error)
 
 import argparse
+import fnmatch
 import os
 import subprocess
 import venv
@@ -57,13 +58,46 @@ def pkg_src(args):
     return src
 
 
+def pkg_scripts(venv_bin):
+    scripts = []
+    ignore = ("activate*", "deactivate*", "easy_install*", "pip*", "python*")
+
+    def shouldnt_ignore(filename):
+        return not any(fnmatch.fnmatch(filename, pattern) for pattern in ignore)
+
+    with os.scandir(venv_bin) as it:
+        for entry in it:
+            if entry.is_file() and shouldnt_ignore(entry.name):
+                scripts.append(entry.name)
+
+    return scripts
+
+
+def link(venv_bin, user_bin):
+    for script in pkg_scripts(venv_bin):
+        src = os.path.join(venv_bin, script)
+        dst = os.path.join(user_bin, script)
+        try:
+            os.symlink(src, dst)
+        except FileExistsError as error:
+            if error.filename == src:
+                continue
+            sys.exit(str(error))
+
+
 def install(args):
     venv_dir = os.path.join(data_dir(), args.package, "venv")
+    venv_bin = os.path.join(venv_dir, "bin")
     venv.create(venv_dir, clear=True, with_pip=True)
-    python = os.path.join(venv_dir, "bin", "python")
+
+    python = os.path.join(venv_bin, "python")
     source = pkg_src(args)
     run(python, "-m", "pip", "install", "--disable-pip-version-check", "--upgrade", "pip")
     run(python, "-m", "pip", "install", source)
+
+    user_bin = bin_dir()
+    os.makedirs(user_bin, mode=0o755, exist_ok=True)
+    link(venv_bin, user_bin)
 
 
 def main():
