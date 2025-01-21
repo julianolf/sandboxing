@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 import install
 
 
@@ -26,3 +28,15 @@ def test_data_dir_on_linux_without_xdg_data_home(monkeypatch):
 def test_bin_dir():
     expected = os.path.join(install.HOME, ".local", "bin")
     assert install.bin_dir() == expected
+
+
+def test_run():
+    expected = "test\n"
+    command = ("python", "-c", "print('test')")
+    assert install.run(*command) == expected
+
+
+def test_run_exit_program_on_errors():
+    command = ("python", "-c", "print 'test'")
+    with pytest.raises(SystemExit):
+        install.run(*command)

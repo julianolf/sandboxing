@@ -49,6 +49,8 @@ def run(*cmd):
         error = res.stdout.decode()
         sys.exit(error)
 
+    return res.stdout.decode()
+
 
 def pkg_src(args):
     src = args.path or args.url or args.package
