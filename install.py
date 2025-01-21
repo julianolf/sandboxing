@@ -62,7 +62,7 @@ def pkg_src(args):
 
 
 def pkg_scripts(venv_bin):
-    scripts = []
+    scripts = set()
     ignore = ("activate*", "deactivate*", "easy_install*", "pip*", "python*")
 
     def shouldnt_ignore(filename):
@@ -71,7 +71,7 @@ def pkg_scripts(venv_bin):
     with os.scandir(venv_bin) as it:
         for entry in it:
             if entry.is_file() and shouldnt_ignore(entry.name):
-                scripts.append(entry.name)
+                scripts.add(entry.name)
 
     return scripts
 

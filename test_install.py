@@ -56,3 +56,29 @@ def test_run_exit_program_on_errors():
 )
 def test_pkg_src(args, src):
     assert install.pkg_src(args) == src
+
+
+def test_pkg_scripts(tmp_path):
+    venv_bin = tmp_path / "bin"
+    venv_bin.mkdir()
+
+    files = (
+        "activate",
+        "activate.csh",
+        "deactivate",
+        "easy_install",
+        "easy_install-3.7",
+        "pip",
+        "pip3",
+        "py.test",
+        "pytest",
+        "python",
+        "python3",
+    )
+
+    for file in files:
+        f = venv_bin / file
+        f.touch()
+
+    expected = {"py.test", "pytest"}
+    assert install.pkg_scripts(venv_bin) == expected
