@@ -1,8 +1,11 @@
+import argparse
 import os
 
 import pytest
 
 import install
+
+Args = argparse.Namespace
 
 
 def test_data_dir_on_darwin(monkeypatch):
@@ -40,3 +43,16 @@ def test_run_exit_program_on_errors():
     command = ("python", "-c", "print 'test'")
     with pytest.raises(SystemExit):
         install.run(*command)
+
+
+@pytest.mark.parametrize(
+    "args,src",
+    [
+        (Args(package="test", version="0.1.0", url=None, path=None), "test==0.1.0"),
+        (Args(package="test", version=None, url=None, path=None), "test"),
+        (Args(package="test", version=None, url="http://host/repo", path=None), "http://host/repo"),
+        (Args(package="test", version=None, url="/home/user/pkg", path=None), "/home/user/pkg"),
+    ],
+)
+def test_pkg_src(args, src):
+    assert install.pkg_src(args) == src
