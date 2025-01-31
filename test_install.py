@@ -65,6 +65,7 @@ def test_pkg_scripts(tmp_path):
     files = (
         "activate",
         "activate.csh",
+        "Activate.ps1",
         "deactivate",
         "easy_install",
         "easy_install-3.7",

@@ -66,7 +66,7 @@ def pkg_scripts(venv_bin):
     ignore = ("activate*", "deactivate*", "easy_install*", "pip*", "python*")
 
     def shouldnt_ignore(filename):
-        return not any(fnmatch.fnmatch(filename, pattern) for pattern in ignore)
+        return not any(fnmatch.fnmatch(filename.lower(), pattern) for pattern in ignore)
 
     with os.scandir(venv_bin) as it:
         for entry in it:
