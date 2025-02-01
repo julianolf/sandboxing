@@ -23,10 +23,10 @@ format:
 	ruff format
 
 test:
-	pytest
+	coverage run -m unittest -b
 
-coverage:
-	pytest --no-cov-on-fail --cov-report term-missing --cov=.
+coverage: test
+	coverage report -m
 
 clean:
 	rm -rf .ruff_cache .coverage .pytest_cache
