@@ -27,9 +27,9 @@ class InstallTestCase(unittest.TestCase):
     @unittest.skipIf(not LINUX, "requires linux")
     def test_data_dir_on_linux_without_xdg_data_home(self):
         expected = os.path.join(install.HOME, ".local", "share")
-        with patch.object(os, "environ") as env:
-            if "XDG_DATA_HOME" in env:
-                del env["XDG_DATA_HOME"]
+        environ = dict(os.environ)
+        environ.pop("XDG_DATA_HOME", None)
+        with patch.dict("os.environ", environ, clear=True):
             self.assertEqual(install.data_dir(), expected)
 
     def test_bin_dir(self):
