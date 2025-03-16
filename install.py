@@ -28,19 +28,18 @@ import shutil
 import subprocess
 import venv
 
+PREFIX = "/usr/local"
 HOME = os.path.expanduser("~")
 
 
-def data_dir():
-    if sys.platform == "darwin":
-        return os.path.join(HOME, "Library", "Application Support")
-    else:
-        default = os.path.join(HOME, ".local", "share")
-        return os.getenv("XDG_DATA_HOME", default)
+def prefix_dir(args):
+    if args.user:
+        return os.path.join(HOME, ".local")
 
+    if args.prefix != PREFIX:
+        return os.path.abspath(os.path.expanduser(args.prefix))
 
-def bin_dir():
-    return os.path.join(HOME, ".local", "bin")
+    return PREFIX
 
 
 def run(*cmd):
@@ -101,8 +100,8 @@ def unlink(venv_bin, user_bin):
 
 
 def install(args):
-    base_dir = os.path.join(data_dir(), args.package)
-    venv_dir = os.path.join(base_dir, "venv")
+    base_dir = prefix_dir(args)
+    venv_dir = os.path.join(base_dir, args.package)
     venv_bin = os.path.join(venv_dir, "bin")
     venv.create(venv_dir, clear=True, with_pip=True)
 
@@ -111,27 +110,31 @@ def install(args):
     run(python, "-m", "pip", "install", "--disable-pip-version-check", "--upgrade", "pip")
     run(python, "-m", "pip", "install", source)
 
-    user_bin = bin_dir()
-    os.makedirs(user_bin, mode=0o755, exist_ok=True)
+    user_bin = os.path.join(base_dir, "bin")
+
+    if not os.path.exists(user_bin):
+        os.makedirs(user_bin, mode=0o755)
+
     link(venv_bin, user_bin)
 
     print(
-        f"{args.package} installed at: {base_dir}\n"
+        f"{args.package} installed at: {venv_dir}\n"
         f"Symbolic links were created at: {user_bin}\n"
         f'Add `export PATH="{user_bin}:$PATH"` to your shell configuration file.'
     )
 
 
 def uninstall(args):
-    base_dir = os.path.join(data_dir(), args.package)
-    venv_bin = os.path.join(base_dir, "venv", "bin")
-    user_bin = bin_dir()
+    base_dir = prefix_dir(args)
+    venv_dir = os.path.join(base_dir, args.package)
+    venv_bin = os.path.join(venv_dir, "bin")
+    user_bin = os.path.join(base_dir, "bin")
 
     if os.path.isdir(venv_bin) and os.path.isdir(user_bin):
         unlink(venv_bin, user_bin)
-        shutil.rmtree(base_dir)
+        shutil.rmtree(venv_dir)
 
-        print(f"Removed symbolic links from: {user_bin}\nDeleted directory: {base_dir}")
+        print(f"Removed symbolic links from: {user_bin}\nDeleted directory: {venv_dir}")
 
 
 def main():
@@ -143,13 +146,27 @@ def main():
     parser.add_argument("-v", "--version", help="the version of the package to install")
     parser.add_argument("-u", "--url", help="the url from which to install the package")
     parser.add_argument("-p", "--path", help="the path from which to install the package")
+    parser.add_argument(
+        "--user",
+        action="store_true",
+        default=False,
+        help="install the package in the user's local directory (typically: ~/.local)",
+    )
+    parser.add_argument(
+        "--prefix",
+        default=PREFIX,
+        help="the directory to install the package (default: %(default)s)",
+    )
     parser.add_argument("--uninstall", action="store_true", default=False, help="uninstall package")
     args = parser.parse_args()
 
-    if args.uninstall:
-        uninstall(args)
-    else:
-        install(args)
+    try:
+        if args.uninstall:
+            uninstall(args)
+        else:
+            install(args)
+    except PermissionError as error:
+        sys.exit(error.strerror)
 
 
 if __name__ == "__main__":

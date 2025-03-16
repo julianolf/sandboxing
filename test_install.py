@@ -1,40 +1,26 @@
 import argparse
 import os
 import pathlib
-import sys
 import tempfile
 import unittest
-from unittest.mock import patch
 
 import install
 
-DARWIN = sys.platform == "darwin"
-LINUX = sys.platform == "linux"
-
 
 class InstallTestCase(unittest.TestCase):
-    @unittest.skipIf(not DARWIN, "requires darwin")
-    def test_data_dir_on_darwin(self):
-        expected = os.path.join(install.HOME, "Library", "Application Support")
-        self.assertEqual(install.data_dir(), expected)
+    def test_prefix_dir_with_default_value(self):
+        args = argparse.Namespace(user=False, prefix=install.PREFIX)
+        self.assertEqual(install.prefix_dir(args), install.PREFIX)
 
-    @unittest.skipIf(not LINUX, "requires linux")
-    def test_data_dir_on_linux_with_xdg_data_home(self):
-        expected = os.path.join(install.HOME, ".shared-data")
-        with patch.dict("os.environ", {"XDG_DATA_HOME": expected}):
-            self.assertEqual(install.data_dir(), expected)
+    def test_prefix_dir_with_user_flag_on(self):
+        expected = os.path.join(install.HOME, ".local")
+        args = argparse.Namespace(user=True, prefix=install.PREFIX)
+        self.assertEqual(install.prefix_dir(args), expected)
 
-    @unittest.skipIf(not LINUX, "requires linux")
-    def test_data_dir_on_linux_without_xdg_data_home(self):
-        expected = os.path.join(install.HOME, ".local", "share")
-        environ = dict(os.environ)
-        environ.pop("XDG_DATA_HOME", None)
-        with patch.dict("os.environ", environ, clear=True):
-            self.assertEqual(install.data_dir(), expected)
-
-    def test_bin_dir(self):
-        expected = os.path.join(install.HOME, ".local", "bin")
-        self.assertEqual(install.bin_dir(), expected)
+    def test_prefix_dir_with_custom_path(self):
+        expected = os.path.join(install.HOME, "apps")
+        args = argparse.Namespace(user=False, prefix=expected)
+        self.assertEqual(install.prefix_dir(args), expected)
 
     def test_run(self):
         expected = "test\n"
