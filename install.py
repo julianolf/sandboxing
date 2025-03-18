@@ -117,11 +117,10 @@ def install(args):
 
     link(venv_bin, user_bin)
 
-    print(
-        f"{args.package} installed at: {venv_dir}\n"
-        f"Symbolic links were created at: {user_bin}\n"
-        f'Add `export PATH="{user_bin}:$PATH"` to your shell configuration file.'
-    )
+    print(f"{args.package} installed at: {venv_dir}\nSymbolic links were created at: {user_bin}")
+
+    if args.user or args.prefix != PREFIX:
+        print(f'Add `export PATH="{user_bin}:$PATH"` to your shell configuration file.')
 
 
 def uninstall(args):
