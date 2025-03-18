@@ -4,7 +4,7 @@
 
 Install Python programs in a safe and isolated environment.
 
-This script is intended to be used as an installation tool for Python programs that do not have their own installation method with dependency isolation. It uses Python's built-in modules **venv** and **pip** to create a virtual environment, install the program along with its dependencies inside that environment, and create symbolic links for the executable scripts registered in the Python package. These links are placed in the user's local bin directory, usually `~/.local/bin`.
+This script is intended to be used as an installation tool for Python programs that do not have their own installation method with dependency isolation. It uses Python's built-in modules **venv** and **pip** to create a virtual environment, install the program along with its dependencies inside that environment, and create symbolic links for the executable scripts registered in the Python package.
 
 ### Requirements
 
