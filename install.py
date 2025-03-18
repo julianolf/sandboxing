@@ -75,10 +75,15 @@ def pkg_scripts(venv_bin):
     return scripts
 
 
-def link(venv_bin, user_bin):
-    for script in pkg_scripts(venv_bin):
+def link(venv_bin, user_bin, bins=None):
+    scripts = bins if bins is not None else pkg_scripts(venv_bin)
+
+    for script in scripts:
         src = os.path.join(venv_bin, script)
         dst = os.path.join(user_bin, script)
+
+        if not os.path.exists(src):
+            continue
 
         if os.path.islink(dst) and os.path.realpath(dst) == src:
             continue
@@ -90,8 +95,10 @@ def link(venv_bin, user_bin):
             sys.exit(error)
 
 
-def unlink(venv_bin, user_bin):
-    for script in pkg_scripts(venv_bin):
+def unlink(venv_bin, user_bin, bins=None):
+    scripts = bins if bins is not None else pkg_scripts(venv_bin)
+
+    for script in scripts:
         src = os.path.join(venv_bin, script)
         dst = os.path.join(user_bin, script)
 
@@ -115,7 +122,7 @@ def install(args):
     if not os.path.exists(user_bin):
         os.makedirs(user_bin, mode=0o755)
 
-    link(venv_bin, user_bin)
+    link(venv_bin, user_bin, args.bins)
 
     print(f"{args.package} installed at: {venv_dir}\nSymbolic links were created at: {user_bin}")
 
@@ -130,7 +137,7 @@ def uninstall(args):
     user_bin = os.path.join(base_dir, "bin")
 
     if os.path.isdir(venv_bin) and os.path.isdir(user_bin):
-        unlink(venv_bin, user_bin)
+        unlink(venv_bin, user_bin, args.bins)
         shutil.rmtree(venv_dir)
 
         print(f"Removed symbolic links from: {user_bin}\nDeleted directory: {venv_dir}")
@@ -145,6 +152,11 @@ def main():
     parser.add_argument("-v", "--version", help="the version of the package to install")
     parser.add_argument("-u", "--url", help="the url from which to install the package")
     parser.add_argument("-p", "--path", help="the path from which to install the package")
+    parser.add_argument(
+        "--bins",
+        action="append",
+        help="the list of binaries provided by the package",
+    )
     parser.add_argument(
         "--user",
         action="store_true",
