@@ -7,32 +7,36 @@ import unittest
 import install
 
 
-class InstallTestCase(unittest.TestCase):
-    def test_prefix_dir_with_default_value(self):
+class TestPrefixDir(unittest.TestCase):
+    def test_with_default_value(self):
         args = argparse.Namespace(user=False, prefix=install.PREFIX)
         self.assertEqual(install.prefix_dir(args), install.PREFIX)
 
-    def test_prefix_dir_with_user_flag_on(self):
+    def test_with_user_flag_on(self):
         expected = os.path.join(install.HOME, ".local")
         args = argparse.Namespace(user=True, prefix=install.PREFIX)
         self.assertEqual(install.prefix_dir(args), expected)
 
-    def test_prefix_dir_with_custom_path(self):
+    def test_with_custom_path(self):
         expected = os.path.join(install.HOME, "apps")
         args = argparse.Namespace(user=False, prefix=expected)
         self.assertEqual(install.prefix_dir(args), expected)
 
-    def test_run(self):
+
+class TestRun(unittest.TestCase):
+    def test_run_command(self):
         expected = "test\n"
         command = ("python", "-c", "print('test')")
         self.assertEqual(install.run(*command), expected)
 
-    def test_run_exit_program_on_errors(self):
+    def test_exit_program_on_errors(self):
         command = ("python", "-c", "print 'test'")
         with self.assertRaises(SystemExit):
             install.run(*command)
 
-    def test_pkg_src(self):
+
+class TestPkgSrc(unittest.TestCase):
+    def test_input_combinations(self):
         params = (
             (
                 argparse.Namespace(package="test", version="0.1.0", url=None, path=None),
@@ -55,7 +59,9 @@ class InstallTestCase(unittest.TestCase):
             with self.subTest(args=args, src=src):
                 self.assertEqual(install.pkg_src(args), src)
 
-    def test_pkg_scripts(self):
+
+class TestPkgScripts(unittest.TestCase):
+    def test_scripts_lookup(self):
         with tempfile.TemporaryDirectory() as path:
             venv_bin = pathlib.Path(path) / "bin"
             venv_bin.mkdir()
